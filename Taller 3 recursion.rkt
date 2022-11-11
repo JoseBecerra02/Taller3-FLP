@@ -68,6 +68,7 @@
     (primitive-un ("longitud") primitiva-longitud)
     (primitive-un ("add1") primitiva-add1)
     (primitive-un ("sub1") primitiva-sub1)
+    (primitive-un ("cero") primitiva-cero)
     ; características adicionales
     (expression ("Si" expression "entonces" expression "sino" expression "finSI")
                 condicional-exp)
@@ -205,6 +206,7 @@
       (primitiva-longitud () (string-length num))
       (primitiva-add1 () (+ num 1))
       (primitiva-sub1 () (- num 1))
+      (primitiva-cero () (zero? num))
      ))
     )
 
