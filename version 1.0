@@ -141,69 +141,9 @@
                      (let ((args (eval-rands rand1 rand2 env)))
                       (apply-primitive prim args))))))
 
-#|datatype: ambiente
-  Propósito: define un tipo de dato llamado ambiente
-  <amb> -> vacio
-  <amb> -> valor
-  <amb> -> ambiente
-|#
-(define-datatype  ambiente ambiente?
-  (vacio)
-  (extendido(var symbol?)
-            (num number?)
-            (amb ambiente?)))
-
-
-#|Función: extend-env
-  Propósito: Recibe una lista de variables y una lista de valores, de misma longitud, y crea un ambiente con ellas
-  List x List -> amb
-  <list-var> :: list
-  <list-val> :: list
-  <amb> :: <datatype>
-
-Casos de prueba:
-  (extend-env '(x) '(5) (empty-env))
-  (extend-env '(x y) '(5 3) (empty-env))
-|#
-(define extend-env
-  (lambda (list-var list-val amb)
-    (if (equal? list-var '())
-        amb
-        (extendido (car list-var) (car list-val) (extend-env (cdr list-var) (cdr list-val) amb)))
-    )
-  )
-
-#|Función: apply-env
-  Propósito: Busca una variable dentro de un ambiente
-  List x symbol -> number / error
-  <amb> :: vacio / extendido
-  <var-buscar> :: <symbol>
-
-Casos de prueba:
-  (apply-env 'h (extend-env '(x y z) '(5 3 1) (empty-env)))
-  (apply-env 'y (extend-env '(x y z) '(5 3 1) (empty-env)))
-|#
-(define apply-env
-  (lambda (var-buscar amb)
-    (cases ambiente amb
-      (vacio ()  "Variable no encontrada")
-      (extendido (var num amb) (if (equal? var-buscar var)
-                                    num
-                                    (apply-env var-buscar amb)))
-      (else "Ambiente no valido")
-      )
-    )
-  )
-; funciones auxiliares para aplicar eval-expression a cada elemento de una 
-; lista de operandos (expresiones)
-;(define eval-rands
-;  (lambda (rands env)
-;    (map (lambda (x) (eval-rand x env)) rands)))
-
 (define eval-rands
   (lambda (rand1 rand2 env)
     (map (lambda (x) (eval-rand x env)) rand1 rand2)))
-
 
 (define eval-rand
   (lambda (rand env)
@@ -220,24 +160,6 @@ Casos de prueba:
       (decr-prim () (- (car args) 1)))))
 
 ;*******************************************************************************************
-;Ambientes
-
-;definición del tipo de dato ambiente
-(define-datatype environment environment?
-  (empty-env-record)
-  (extended-env-record (syms (list-of symbol?))
-                       (vals (list-of scheme-value?))
-                       (env environment?)))
-
-(define scheme-value? (lambda (v) #t))
-
-;empty-env:      -> enviroment
-;función que crea un ambiente vacío
-(define empty-env  
-  (lambda ()
-    (empty-env-record)))       ;llamado al constructor de ambiente vacío 
-
-
 ;extend-env: <list-of symbols> <list-of numbers> enviroment -> enviroment
 ;función que crea un ambiente extendido
 (define extend-env
