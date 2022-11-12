@@ -113,7 +113,13 @@
       (a-program (body)
                  (eval-expression body (init-env))))))
 
-
+; Ambiente inicial
+(define init-env
+  (lambda ()
+    (extend-env
+     '(i v x)
+     '(1 5 10)
+     (empty-env))))
 
 ;eval-expression: <expression> <enviroment> -> numero
 ; evalua la expresión en el ambiente de entrada
@@ -162,7 +168,39 @@
       (incr-prim () (+ (car args) 1))
       (decr-prim () (- (car args) 1)))))
 
-
+;*******************************************************************************************
+;extend-env: <list-of symbols> <list-of numbers> enviroment -> enviroment
+;función que crea un ambiente extendido
+(define extend-env
+  (lambda (syms vals env)
+    (extended-env-record syms vals env)))
+;función que busca un símbolo en un ambiente
+(define apply-env
+  (lambda (env sym)
+    (cases environment env
+      (empty-env-record ()
+                        (eopl:error 'apply-env "No binding for ~s" sym))
+      (extended-env-record (syms vals env)
+                           (let ((pos (list-find-position sym syms)))
+                             (if (number? pos)
+                                 (list-ref vals pos)
+                                 (apply-env env sym)))))))
+;****************************************************************************************
+;Funciones Auxiliares
+; funciones auxiliares para encontrar la posición de un símbolo
+; en la lista de símbolos de unambiente
+(define list-find-position
+  (lambda (sym los)
+    (list-index (lambda (sym1) (eqv? sym1 sym)) los)))
+(define list-index
+  (lambda (pred ls)
+    (cond
+      ((null? ls) #f)
+      ((pred (car ls)) 0)
+      (else (let ((list-index-r (list-index pred (cdr ls))))
+              (if (number? list-index-r)
+                (+ list-index-r 1)
+                #f))))))
 
 ;******************************************************************************************
 ;Pruebas
